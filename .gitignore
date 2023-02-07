@@ -3,4 +3,4 @@
 
 # Except...
 !.gitignore
-!_assignment-1-sub/
+!_*
