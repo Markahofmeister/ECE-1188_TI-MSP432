@@ -1,2 +1,6 @@
+# Ignore Everything
+*
 
-/.metadata/
+# Except...
+!.gitignore
+!_assignment-1-sub/
