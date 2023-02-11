@@ -1,6 +1,6 @@
 # FIXED
 
-SysTick.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/tirslk_max_1_00_02/inc/SysTick.c
+SysTick.obj: C:/Users/marka/Spring-2023/Cyber-Physical_Systems/ECE-1188_TI-MSP432/inc/SysTick.c
 SysTick.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdint.h
 SysTick.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/_ti_config.h
 SysTick.obj: C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/linkage.h
@@ -20,7 +20,7 @@ SysTick.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_compiler.h
 SysTick.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/CMSIS/cmsis_ccs.h
 SysTick.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/system_msp432p401r.h
 
-C:/Users/marka/Spring-2023/Cyber-Physical_Systems/tirslk_max_1_00_02/inc/SysTick.c:
+C:/Users/marka/Spring-2023/Cyber-Physical_Systems/ECE-1188_TI-MSP432/inc/SysTick.c:
 
 C:/ti/ccs1210/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include/stdint.h:
 
