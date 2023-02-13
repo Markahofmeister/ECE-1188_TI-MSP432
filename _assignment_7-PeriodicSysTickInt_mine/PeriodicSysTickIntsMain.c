@@ -15,7 +15,8 @@
 
 volatile uint32_t Time, MainCount;
 
-#define LEDOUT (*((volatile uint8_t *)(0x42098040)))        //what the hell is this?
+#define LEDOUT (*((volatile uint8_t *)(0x42098040)))        //what is this?
+
 
 void SysTick_Handler(void){
   LEDOUT ^= 0x01;       // toggle P1.0
@@ -38,6 +39,7 @@ int main(void){
   }
 }
 
+/*
 uint32_t High=120000,Low=360000;
 void SysTick_Handler2(void){ // PWM
   LEDOUT ^= 0x01;   // toggle red LED
@@ -48,4 +50,4 @@ void SysTick_Handler2(void){ // PWM
   }
   SysTick->VAL = 0;        // any value written to counter clears
   Time = Time + 1;
-}
+}*/

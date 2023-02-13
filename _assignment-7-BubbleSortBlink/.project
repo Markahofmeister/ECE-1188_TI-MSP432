@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>_assignment_7-PeriodicSysTickInt</name>
+	<name>_assignment-7-BubbleSortBlink</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -39,6 +39,11 @@
 			<name>LaunchPad.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/inc/LaunchPad.c</locationURI>
+		</link>
+		<link>
+			<name>SysTick.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/inc/SysTick.c</locationURI>
 		</link>
 		<link>
 			<name>SysTickInts.c</name>
