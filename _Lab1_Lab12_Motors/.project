@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>_Lab06_GPIO</name>
+	<name>_Lab1_Lab12_Motors</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -26,19 +26,29 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>Bump.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/inc/Bump.c</locationURI>
+		</link>
+		<link>
 			<name>Clock.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/inc/Clock.c</locationURI>
 		</link>
 		<link>
-			<name>Reflectance.c</name>
+			<name>LaunchPad.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/inc/Reflectance.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/inc/LaunchPad.c</locationURI>
 		</link>
 		<link>
-			<name>TExaS.c</name>
+			<name>MotorSimple.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/inc/TExaS.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/inc/MotorSimple.c</locationURI>
+		</link>
+		<link>
+			<name>SysTick.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/inc/SysTick.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
