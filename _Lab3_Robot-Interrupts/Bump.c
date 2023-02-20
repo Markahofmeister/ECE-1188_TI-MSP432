@@ -5,8 +5,10 @@
  * 2/20/2023
  */
 
+#include <stdint.h>
+#include "msp.h"
 
-// Negative logic bump sensors
+// Initialize negative logic bump sensors
 // P4.7 Bump5, left side of robot
 // P4.6 Bump4
 // P4.5 Bump3
@@ -14,16 +16,19 @@
 // P4.2 Bump1
 // P4.0 Bump0, right side of robot
 
-#include <stdint.h>
-#include "msp.h"
-// Initialize Bump sensors
-// Make six Port 4 pins inputs
-// Activate interface pullup
-// pins 7,6,5,3,2,0
 void Bump_Init(void){
-    // write this as part of Lab 10
+
+    uint8_t bsMask = 0xED;
+
+    P4->SEL0 &= ~bsMask;            //select GPIO
+    P4->SEL1 &= ~bsMask;
+    P4->DIR &= ~bsMask;             //Change direction to input
+    P4->REN |= bsMask;              //Enable PUPD resistor
+    P4->OUT |= bsMask;             //Set to pull-up
 
 }
+
+
 // Read current state of 6 switches
 // Returns a 6-bit positive logic result (0 to 63)
 // bit 5 Bump5
@@ -33,9 +38,8 @@ void Bump_Init(void){
 // bit 1 Bump1
 // bit 0 Bump0
 uint8_t Bump_Read(void){
-    // write this as part of Lab 10
 
-    return 0; // replace this line
+    return (P4->IN&0xED);   // Read 6 most LSB of port 4
 }
 
 
