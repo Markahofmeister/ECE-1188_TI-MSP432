@@ -22,7 +22,7 @@ PeriodicSensing.obj: C:/ti/ccs1210/ccs/ccs_base/arm/include/system_msp432p401r.h
 PeriodicSensing.obj: ../../inc/TExaS.h
 PeriodicSensing.obj: ../../inc/Clock.h
 PeriodicSensing.obj: ../../inc/CortexM.h
-PeriodicSensing.obj: ../../inc/SysTick.h
+PeriodicSensing.obj: ../../inc/SysTickInts.h
 PeriodicSensing.obj: ../../inc/LaunchPad.h
 PeriodicSensing.obj: ../../inc/Reflectance.h
 PeriodicSensing.obj: ../../inc/Bump.h
@@ -71,7 +71,7 @@ C:/ti/ccs1210/ccs/ccs_base/arm/include/system_msp432p401r.h:
 
 ../../inc/CortexM.h:
 
-../../inc/SysTick.h:
+../../inc/SysTickInts.h:
 
 ../../inc/LaunchPad.h:
 

@@ -11,8 +11,12 @@ GEN_CMDS__FLAG :=
 
 ORDERED_OBJS += \
 "./Bump.obj" \
+"./Clock.obj" \
+"./CortexM.obj" \
+"./LaunchPad.obj" \
 "./PeriodicSensing.obj" \
 "./Reflectance.obj" \
+"./SysTickInts.obj" \
 "./startup_msp432p401r_ccs.obj" \
 "./system_msp432p401r.obj" \
 "../msp432p401r.cmd" \
@@ -158,8 +162,8 @@ _Lab3_Robot-Interrupts.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "Bump.obj" "PeriodicSensing.obj" "Reflectance.obj" "startup_msp432p401r_ccs.obj" "system_msp432p401r.obj" 
-	-$(RM) "Bump.d" "PeriodicSensing.d" "Reflectance.d" "startup_msp432p401r_ccs.d" "system_msp432p401r.d" 
+	-$(RM) "Bump.obj" "Clock.obj" "CortexM.obj" "LaunchPad.obj" "PeriodicSensing.obj" "Reflectance.obj" "SysTickInts.obj" "startup_msp432p401r_ccs.obj" "system_msp432p401r.obj" 
+	-$(RM) "Bump.d" "Clock.d" "CortexM.d" "LaunchPad.d" "PeriodicSensing.d" "Reflectance.d" "SysTickInts.d" "startup_msp432p401r_ccs.d" "system_msp432p401r.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
