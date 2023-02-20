@@ -77,8 +77,8 @@ void SysTick_Handler(void){             // Handles interrupt and determines what
 
     }
 
-    sysTickCounter++;
-    if(sysTickCounter == 10) {
+    sysTickCounter++;                   //increment the counter for the number of times sysTick has been called
+    if(sysTickCounter == 10) {          //reset down to 0 if necessary
         sysTickCounter = 0;
     }
 
