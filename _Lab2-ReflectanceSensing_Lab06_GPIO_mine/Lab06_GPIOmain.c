@@ -57,30 +57,45 @@ policies, either expressed or implied, of the FreeBSD Project.
 #include "..\inc\Clock.h"
 #include "..\inc\TExaS.h"
 
-uint8_t Data; // QTRX
+
 // Test main for section 6.4.3
-int Program6_1(void){
+/*int Program6_1(void){
+
+  uint8_t Data; // QTRX
+
   Clock_Init48MHz();
   Reflectance_Init(); // your initialization
-  TExaS_Init(LOGICANALYZER_P7);
+
   while(1){
+
     Data = Reflectance_Read(1000); // your measurement
     Clock_Delay1ms(10);
-  }
-}
 
-int32_t Position; // 332 is right, and -332 is left of center
-int mainX(void){
+  }
+
+}*/
+
+int main(void){
+
+  uint8_t Data; // QTRX
+  int32_t Position; // 332 is right, and -332 is left of center
+
   Clock_Init48MHz();
   Reflectance_Init();
-  TExaS_Init(LOGICANALYZER_P7);
-  while(1){
+
+  while(1) {
+
+    //Program6_1();             //For testing part 2
+
     Data = Reflectance_Read(1000);
     Position = Reflectance_Position(Data);
     Clock_Delay1ms(10);
+
   }
+
 }
 
+/*
 int main2(void){ // main2(void){
     int32_t i;
   Clock_Init48MHz();
@@ -105,23 +120,30 @@ int main2(void){ // main2(void){
   }
 }
 
-int main(void){ // main3
+int main3(void){ // main3
     int32_t i;
   Clock_Init48MHz();
   Reflectance_Init();
   P4->SEL0 &= ~0x01;
   P4->SEL1 &= ~0x01;    //  P4.0 as GPIO
   P4->DIR |= 0x01;      //  make P4.0 out
+  P4->OUT &= ~0x01;     // initially turn off P4.0
+
   while(1){
     P5->OUT |= 0x08;      // turn on 4 even IR LEDs
     P7->DIR = 0xFF;       // make P7.7-P7.0 out
     P7->OUT = 0xFF;       // prime for measurement
     Clock_Delay1us(10);   // wait 10 us
     P7->DIR = 0x00;       // make P7.7-P7.0 in
+    //P7->REN |= 0x01;
+    //P7->OUT |= 0x01;
+
     for(i=0;i<10000;i++){
       P4->OUT = P7->IN&0x01; // convert P7.0 input to digital
     }
     P5->OUT &= ~0x08;     // turn off 4 even IR LEDs
     Clock_Delay1ms(10);
   }
-}
+}*/
+
+
