@@ -1,9 +1,9 @@
-// Lab14_EdgeInterruptsmain.c
-// Runs on MSP432, interrupt version
-// Main test program for interrupt driven bump switches the robot.
-// Daniel Valvano and Jonathan Valvano
+// TimerA1.c
+// Runs on MSP432
+// Use Timer A1 in periodic mode to request interrupts at a particular
+// period.
+// Daniel Valvano
 // July 11, 2019
-
 /* This example accompanies the book
    "Embedded Systems: Introduction to Robotics,
    Jonathan W. Valvano, ISBN: 9781074544300, copyright (c) 2019
@@ -38,56 +38,36 @@ those of the authors and should not be interpreted as representing official
 policies, either expressed or implied, of the FreeBSD Project.
 */
 
-// Negative logic bump sensors
-// P4.7 Bump5, left side of robot
-// P4.6 Bump4
-// P4.5 Bump3
-// P4.3 Bump2
-// P4.2 Bump1
-// P4.0 Bump0, right side of robot
-
 #include <stdint.h>
 #include "msp.h"
-#include "../inc/Clock.h"
-#include "../inc/CortexM.h"
-#include "../inc/LaunchPad.h"
-#include "../inc/Motor.h"
-#include "../inc/BumpInt.h"
-#include "../inc/TExaS.h"
-#include "../inc/TimerA1.h"
-#include "../inc/FlashProgram.h"
 
-uint8_t CollisionData, CollisionFlag;  // mailbox
+void (*TimerA1Task)(void);   // user function
 
-void HandleCollision(uint8_t bumpSensor){
-   Motor_Stop();
-   CollisionData = bumpSensor;
-   CollisionFlag = 1;
-}
+// ***************** TimerA1_Init ****************
+// Activate Timer A1 interrupts to run user task periodically
+// Inputs:  task is a pointer to a user function
+//          period in units (24/SMCLK), 16 bits
+// Outputs: none
+// With SMCLK 12 MHz, period has units 2us
+void TimerA1_Init(void(*task)(void), uint16_t period){
+    // write this as part of Lab 13
 
-int main(void){  // test of interrupt-driven bump interface
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-  CollisionFlag = 0;
-  Motor_Init();        // activate Lab 13 software
-  LaunchPad_Init();
-  //Motor_Forward(7500,7500); // 50%
-  BumpInt_Init(&HandleCollision);
-
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
+  
 }
 
 
-int mainX(void){
-  DisableInterrupts();
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
+// ------------TimerA1_Stop------------
+// Deactivate the interrupt running a user task periodically.
+// Input: none
+// Output: none
+void TimerA1_Stop(void){
+    // write this as part of Lab 13
 
-// write this as part of Lab 14, section 14.4.4 Integrated Robotic System
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
+ 
 }
 
+
+void TA1_0_IRQHandler(void){
+    // write this as part of Lab 13
+
+}

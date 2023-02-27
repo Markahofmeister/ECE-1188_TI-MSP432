@@ -1,8 +1,14 @@
-// Lab14_EdgeInterruptsmain.c
-// Runs on MSP432, interrupt version
-// Main test program for interrupt driven bump switches the robot.
-// Daniel Valvano and Jonathan Valvano
-// July 11, 2019
+/**
+ * @file      Timer32.h
+ * @brief     Initialize Timer32
+ * @details   Use Timer32 for periodic interrupts.
+ * @version   TI-RSLK MAX v1.1
+ * @author    Daniel Valvano and Jonathan Valvano
+ * @copyright Copyright 2019 by Jonathan W. Valvano, valvano@mail.utexas.edu,
+ * @warning   AS-IS
+ * @note      For more information see  http://users.ece.utexas.edu/~valvano/
+ * @date      June 28, 2019
+ ******************************************************************************/
 
 /* This example accompanies the book
    "Embedded Systems: Introduction to Robotics,
@@ -38,56 +44,36 @@ those of the authors and should not be interpreted as representing official
 policies, either expressed or implied, of the FreeBSD Project.
 */
 
-// Negative logic bump sensors
-// P4.7 Bump5, left side of robot
-// P4.6 Bump4
-// P4.5 Bump3
-// P4.3 Bump2
-// P4.2 Bump1
-// P4.0 Bump0, right side of robot
+#ifndef __TIMER32INTS_H__ // do not include more than once
+#define __TIMER32INTS_H__
 
-#include <stdint.h>
-#include "msp.h"
-#include "../inc/Clock.h"
-#include "../inc/CortexM.h"
-#include "../inc/LaunchPad.h"
-#include "../inc/Motor.h"
-#include "../inc/BumpInt.h"
-#include "../inc/TExaS.h"
-#include "../inc/TimerA1.h"
-#include "../inc/FlashProgram.h"
-
-uint8_t CollisionData, CollisionFlag;  // mailbox
-
-void HandleCollision(uint8_t bumpSensor){
-   Motor_Stop();
-   CollisionData = bumpSensor;
-   CollisionFlag = 1;
-}
-
-int main(void){  // test of interrupt-driven bump interface
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-  CollisionFlag = 0;
-  Motor_Init();        // activate Lab 13 software
-  LaunchPad_Init();
-  //Motor_Forward(7500,7500); // 50%
-  BumpInt_Init(&HandleCollision);
-
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
-}
+/*!
+ * @defgroup Timer
+ * @brief
+ * @{*/
 
 
-int mainX(void){
-  DisableInterrupts();
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
+/**
+ * \enum timer32divider
+ * \brief specifies the prescale used for the 32-bit timer
+ */
+ enum timer32divider{
+  T32DIV1 = 0x00000000,    /**< divide by 1, maximum period of about 89 seconds at 48 MHz */
+  T32DIV16 = 0x00000004,   /**< divide by 16, maximum period of about 23 minutes at 48 MHz */
+  T32DIV256 = 0x00000008   /**< divide by 256, maximum period of about 6 hours, 21 minutes at 48 MHz */
+};
 
-// write this as part of Lab 14, section 14.4.4 Integrated Robotic System
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
-}
+/**
+ * Activate Timer 32 interrupts to run user task periodically
+ * @param task is a pointer to a user function called periodically
+ * @param period in units (1/(bus clock)/div), 32 bits
+ * @param div is clock divider for Timer32 Timer 1
+ * @return none
+ * @note T32DIV1   for input clock divider /1<br>
+ * T32DIV16  for input clock divider /16<br>
+ * T32DIV256 for input clock divider /256<br>
+ * @brief Initialize Timer 32
+ */
+void Timer32_Init(void(*task)(void), uint32_t period, enum timer32divider div);
 
+#endif // __TIMER32INTS_H__

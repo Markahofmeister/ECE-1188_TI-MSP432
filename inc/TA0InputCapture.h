@@ -1,14 +1,20 @@
-// Lab14_EdgeInterruptsmain.c
-// Runs on MSP432, interrupt version
-// Main test program for interrupt driven bump switches the robot.
-// Daniel Valvano and Jonathan Valvano
-// July 11, 2019
+/**
+ * @file      TA0InputCapture.h
+ * @brief     Initialize Timer A0
+ * @details   Use Timer A0 in capture mode to request interrupts on rising
+ * edge of P7.3 (TA0CCP0) and call a user function. 
+ * Period measurement with units of 0.083 usec
+ * @version   TI-RSLK MAX v1.1
+ * @author    Daniel Valvano and Jonathan Valvano
+ * @copyright Copyright 2019 by Jonathan W. Valvano, valvano@mail.utexas.edu,
+ * @warning   AS-IS
+ * @note      For more information see  http://users.ece.utexas.edu/~valvano/
+ * @date      June 28, 2019
+ ******************************************************************************/
 
 /* This example accompanies the book
    "Embedded Systems: Introduction to Robotics,
    Jonathan W. Valvano, ISBN: 9781074544300, copyright (c) 2019
- For more information about my classes, my research, and my books, see
- http://users.ece.utexas.edu/~valvano/
 
 Simplified BSD License (FreeBSD License)
 Copyright (c) 2019, Jonathan Valvano, All rights reserved.
@@ -36,58 +42,28 @@ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 The views and conclusions contained in the software and documentation are
 those of the authors and should not be interpreted as representing official
 policies, either expressed or implied, of the FreeBSD Project.
-*/
+ */
 
-// Negative logic bump sensors
-// P4.7 Bump5, left side of robot
-// P4.6 Bump4
-// P4.5 Bump3
-// P4.3 Bump2
-// P4.2 Bump1
-// P4.0 Bump0, right side of robot
-
-#include <stdint.h>
-#include "msp.h"
-#include "../inc/Clock.h"
-#include "../inc/CortexM.h"
-#include "../inc/LaunchPad.h"
-#include "../inc/Motor.h"
-#include "../inc/BumpInt.h"
-#include "../inc/TExaS.h"
-#include "../inc/TimerA1.h"
-#include "../inc/FlashProgram.h"
-
-uint8_t CollisionData, CollisionFlag;  // mailbox
-
-void HandleCollision(uint8_t bumpSensor){
-   Motor_Stop();
-   CollisionData = bumpSensor;
-   CollisionFlag = 1;
-}
-
-int main(void){  // test of interrupt-driven bump interface
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-  CollisionFlag = 0;
-  Motor_Init();        // activate Lab 13 software
-  LaunchPad_Init();
-  //Motor_Forward(7500,7500); // 50%
-  BumpInt_Init(&HandleCollision);
-
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
-}
+// external signal connected to P7.3 (TA0CCP0) (trigger on both edges)
 
 
-int mainX(void){
-  DisableInterrupts();
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
+#ifndef TA0INPUTCAPTURE_H_
+#define TA0INPUTCAPTURE_H_
+/*!
+ * @defgroup Timer
+ * @brief
+ * @{*/
 
-// write this as part of Lab 14, section 14.4.4 Integrated Robotic System
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
-}
+/**
+ * Initialize Timer A0 in edge time mode to request interrupts on
+ * both edges of P7.3 (TA0CCP0).  The interrupt service routine
+ * acknowledges the interrupt and calls a user function.
+ * @param task is a pointer to a user function called when edge occurs<br>
+ *        parameter is 16-bit up-counting timer value when edge occurred (units of 0.083 usec)
+ * @return none
+ * @note  Assumes low-speed subsystem master clock is 12 MHz
+ * @brief  Initialize Timer A0
+ */
+void TimerA0Capture_Init(void(*task)(uint16_t time));
 
+#endif /* TA0INPUTCAPTURE_H_ */

@@ -1,8 +1,8 @@
-// Lab14_EdgeInterruptsmain.c
-// Runs on MSP432, interrupt version
-// Main test program for interrupt driven bump switches the robot.
-// Daniel Valvano and Jonathan Valvano
-// July 11, 2019
+// LaunchPad.c
+// Runs on MSP432
+// Input from switches, output to LED
+// Jonathan Valvano
+// February 18, 2017
 
 /* This example accompanies the book
    "Embedded Systems: Introduction to Robotics,
@@ -37,57 +37,58 @@ The views and conclusions contained in the software and documentation are
 those of the authors and should not be interpreted as representing official
 policies, either expressed or implied, of the FreeBSD Project.
 */
+ 
+// built-in LED1 connected to P1.0
+// negative logic built-in Button 1 connected to P1.1
+// negative logic built-in Button 2 connected to P1.4
+// built-in red LED connected to P2.0
+// built-in green LED connected to P2.1
+// built-in blue LED connected to P2.2
 
-// Negative logic bump sensors
-// P4.7 Bump5, left side of robot
-// P4.6 Bump4
-// P4.5 Bump3
-// P4.3 Bump2
-// P4.2 Bump1
-// P4.0 Bump0, right side of robot
-
-#include <stdint.h>
 #include "msp.h"
-#include "../inc/Clock.h"
-#include "../inc/CortexM.h"
-#include "../inc/LaunchPad.h"
-#include "../inc/Motor.h"
-#include "../inc/BumpInt.h"
-#include "../inc/TExaS.h"
-#include "../inc/TimerA1.h"
-#include "../inc/FlashProgram.h"
 
-uint8_t CollisionData, CollisionFlag;  // mailbox
 
-void HandleCollision(uint8_t bumpSensor){
-   Motor_Stop();
-   CollisionData = bumpSensor;
-   CollisionFlag = 1;
+//------------LaunchPad_Init------------
+// Initialize Switch input and LED output
+// Input: none
+// Output: none
+void LaunchPad_Init(void){
+  P1->SEL0 &= ~0x13;
+  P1->SEL1 &= ~0x13;    // 1) configure P1.4, P1.1, and P1.0 as GPIO
+  P1->DIR &= ~0x12;     // 2) make P1.4 and P1.1 in
+  P1->DIR |= 0x01;      //    make P1.0 out
+  P1->REN |= 0x12;      // 3) enable pull resistors on P1.4 and P1.1
+  P1->OUT |= 0x12;      //    P1.4 and P1.1 are pull-up
+  P2->SEL0 &= ~0x07;
+  P2->SEL1 &= ~0x07;    // 1) configure P2.2-P2.0 as GPIO
+  P2->DIR |= 0x07;      // 2) make P2.2-P2.0 out
+  P2->DS |= 0x07;       // 3) activate increased drive strength
+  P2->OUT &= ~0x07;     //    all LEDs off
 }
 
-int main(void){  // test of interrupt-driven bump interface
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-  CollisionFlag = 0;
-  Motor_Init();        // activate Lab 13 software
-  LaunchPad_Init();
-  //Motor_Forward(7500,7500); // 50%
-  BumpInt_Init(&HandleCollision);
-
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
+//------------LaunchPad_Input------------
+// Input from Switches 
+// Input: none
+// Output: 0x00 none
+//         0x01 Button1
+//         0x02 Button2
+//         0x03 both Button1 and Button2
+uint8_t LaunchPad_Input(void){
+  return ((((~(P1->IN))&0x10)>>3)|(((~(P1->IN))&0x02)>>1));   // read P1.4,P1.1 inputs
 }
 
-
-int mainX(void){
-  DisableInterrupts();
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-
-// write this as part of Lab 14, section 14.4.4 Integrated Robotic System
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
+//------------LaunchPad_LED------------
+// Output to LaunchPad red LED
+// Input: 0 off, 1 on
+// Output: none
+void LaunchPad_LED(uint8_t data){  // write one bit to P1.0
+  P1->OUT = (P1->OUT&0xFE)|data;
 }
 
+//------------LaunchPad_Output------------
+// Output to LaunchPad LEDs 
+// Input: 0 off, bit0=red,bit1=green,bit2=blue
+// Output: none
+void LaunchPad_Output(uint8_t data){  // write three outputs bits of P2
+  P2->OUT = (P2->OUT&0xF8)|data;
+}

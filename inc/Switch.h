@@ -1,8 +1,16 @@
-// Lab14_EdgeInterruptsmain.c
-// Runs on MSP432, interrupt version
-// Main test program for interrupt driven bump switches the robot.
-// Daniel Valvano and Jonathan Valvano
-// July 11, 2019
+/**
+ * @file      Switch.h
+ * @brief     Interface external switch on P1.5
+ * @details   Positive logic switch interfaced to GPIO Port 1 bit 5 for input.
+ * An external pull-down is used
+ * @version   TI-RSLK MAX v1.1
+ * @author    Daniel and Jonathan Valvano
+ * @copyright Copyright 2019 by Jonathan W. Valvano, valvano@mail.utexas.edu,
+ * @warning   AS-IS
+ * @note      For more information see  http://users.ece.utexas.edu/~valvano/
+ * @date      February 19, 2017
+
+ ******************************************************************************/
 
 /* This example accompanies the book
    "Embedded Systems: Introduction to Robotics,
@@ -38,56 +46,26 @@ those of the authors and should not be interpreted as representing official
 policies, either expressed or implied, of the FreeBSD Project.
 */
 
-// Negative logic bump sensors
-// P4.7 Bump5, left side of robot
-// P4.6 Bump4
-// P4.5 Bump3
-// P4.3 Bump2
-// P4.2 Bump1
-// P4.0 Bump0, right side of robot
+/*!
+ * @defgroup RSLK_Input_Output
+ * @brief
+ * @{*/
+/**
+ * Initialize positive logic switch interfaced to GPIO Port 1 bit 5.
+ *
+ * @param  none
+ * @return none
+ * @brief  Initialize Switch interfaced to P1.5
+ * @note An external pull-down is needed.
+ */
+void Switch_Init(void);
 
-#include <stdint.h>
-#include "msp.h"
-#include "../inc/Clock.h"
-#include "../inc/CortexM.h"
-#include "../inc/LaunchPad.h"
-#include "../inc/Motor.h"
-#include "../inc/BumpInt.h"
-#include "../inc/TExaS.h"
-#include "../inc/TimerA1.h"
-#include "../inc/FlashProgram.h"
-
-uint8_t CollisionData, CollisionFlag;  // mailbox
-
-void HandleCollision(uint8_t bumpSensor){
-   Motor_Stop();
-   CollisionData = bumpSensor;
-   CollisionFlag = 1;
-}
-
-int main(void){  // test of interrupt-driven bump interface
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-  CollisionFlag = 0;
-  Motor_Init();        // activate Lab 13 software
-  LaunchPad_Init();
-  //Motor_Forward(7500,7500); // 50%
-  BumpInt_Init(&HandleCollision);
-
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
-}
-
-
-int mainX(void){
-  DisableInterrupts();
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-
-// write this as part of Lab 14, section 14.4.4 Integrated Robotic System
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
-}
+/**
+ * Input from positive logic switch interfaced to GPIO Port 1 bit 5.
+ *
+ * @param  none
+ * @return 0x20 if pressed; 0x00 if not pressed
+ * @brief  Switch input
+ */
+uint32_t Switch_Input(void);
 

@@ -1,8 +1,10 @@
-// Lab14_EdgeInterruptsmain.c
-// Runs on MSP432, interrupt version
-// Main test program for interrupt driven bump switches the robot.
-// Daniel Valvano and Jonathan Valvano
-// July 11, 2019
+// Switch.c
+// Runs on MSP432
+// Provide functions that initialize a GPIO as an input pin and
+// allow reading of two negative logic switches on P1.1 and P1.4
+// and an external switch on P1.5.
+// Daniel and Jonathan Valvano
+// April 22, 2015
 
 /* This example accompanies the book
    "Embedded Systems: Introduction to Robotics,
@@ -38,56 +40,47 @@ those of the authors and should not be interpreted as representing official
 policies, either expressed or implied, of the FreeBSD Project.
 */
 
-// Negative logic bump sensors
-// P4.7 Bump5, left side of robot
-// P4.6 Bump4
-// P4.5 Bump3
-// P4.3 Bump2
-// P4.2 Bump1
-// P4.0 Bump0, right side of robot
+// built-in LED1 connected to P1.0
+// negative logic built-in Button 1 connected to P1.1
+// negative logic built-in Button 2 connected to P1.4
+// positive logic switch connected to P1.5
+// built-in red LED connected to P2.0
+// built-in green LED connected to P2.1
+// built-in blue LED connected to P2.2
 
 #include <stdint.h>
 #include "msp.h"
-#include "../inc/Clock.h"
-#include "../inc/CortexM.h"
-#include "../inc/LaunchPad.h"
-#include "../inc/Motor.h"
-#include "../inc/BumpInt.h"
-#include "../inc/TExaS.h"
-#include "../inc/TimerA1.h"
-#include "../inc/FlashProgram.h"
 
-uint8_t CollisionData, CollisionFlag;  // mailbox
+#define SW1       0x02                  // on the left side of the LaunchPad board
+#define SW2       0x10                  // on the right side of the LaunchPad board
+#define SWEXT     0x20                  // external switch
 
-void HandleCollision(uint8_t bumpSensor){
-   Motor_Stop();
-   CollisionData = bumpSensor;
-   CollisionFlag = 1;
+//------------Switch_Init------------
+// Initialize GPIO Port 1 bit 5 for input.  An external pull-down
+// resistor is used.
+// Input: none
+// Output: none
+void Switch_Init(void){
+  P1->SEL0 &= ~0x20;
+  P1->SEL1 &= ~0x20;                 // configure P1.5 as GPIO
+  P1->DIR &= ~0x20;                  // make P1.5 in
+  P1->REN &= ~0x20;                  // disable pull resistor on P1.5
 }
 
-int main(void){  // test of interrupt-driven bump interface
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-  CollisionFlag = 0;
-  Motor_Init();        // activate Lab 13 software
-  LaunchPad_Init();
-  //Motor_Forward(7500,7500); // 50%
-  BumpInt_Init(&HandleCollision);
-
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
+//------------Switch_Input------------
+// Read and return the status of GPIO Port 1 bit 5.
+// Input: none
+// Output: 0x20 if P1.5 is high
+//         0x00 if P1.5 is low
+uint32_t Switch_Input(void){
+                                   // read P1.5 input
+  return (P1->IN&0x20);            // return 0x20(pressed) or 0(not pressed)
+}
+// Volume2 code
+#define P15IN (*((volatile uint8_t *)(0x42098014)))
+uint32_t Switch_Input2(void){
+  return P15IN;      // 0x01 if pressed, 0x00 if not pressed
 }
 
 
-int mainX(void){
-  DisableInterrupts();
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-
-// write this as part of Lab 14, section 14.4.4 Integrated Robotic System
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
-}
 

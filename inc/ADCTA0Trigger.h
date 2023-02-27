@@ -1,8 +1,25 @@
-// Lab14_EdgeInterruptsmain.c
-// Runs on MSP432, interrupt version
-// Main test program for interrupt driven bump switches the robot.
-// Daniel Valvano and Jonathan Valvano
-// July 11, 2019
+/**
+ * @file      ADCTA0Trigger.h
+ * @brief     Initialize 14-bit ADC0
+ * @details   ADC input, timer trigger interrupting system, 14-bit conversion<br>
+ * With timer-triggered sampling, there is no jitter.
+ * The ADC14 allows two possible references: 2.5V or 3.3V.
+ * The internal 2.5V reference is lower noise, but limits the range to 0 to 2.5V.>
+ * The other possibility is to use the analog voltage supply at 3.3V,
+ * making the ADC range 0 to 3.3V. In this driver, the 2.5V range is selected.<br>
+ * - sample just P4.7/A6 <br>
+ * @version   TI-RSLK MAX v1.1
+ * @author    Daniel Valvano and Jonathan Valvano
+ * @copyright Copyright 2019 by Jonathan W. Valvano, valvano@mail.utexas.edu,
+ * @warning   AS-IS
+ * @note      For more information see  http://users.ece.utexas.edu/~valvano/
+ * @date      July 11, 2019
+<table>
+<caption id="ADCpin">ADC pin used for this example</caption>
+<tr><th>Pin  <th>ADC channel
+<tr><td>P4.7 <td>A6
+</table>
+******************************************************************************/
 
 /* This example accompanies the book
    "Embedded Systems: Introduction to Robotics,
@@ -37,57 +54,18 @@ The views and conclusions contained in the software and documentation are
 those of the authors and should not be interpreted as representing official
 policies, either expressed or implied, of the FreeBSD Project.
 */
+/*!
+ * @defgroup ADC14
+ * @brief
+ * @{*/
 
-// Negative logic bump sensors
-// P4.7 Bump5, left side of robot
-// P4.6 Bump4
-// P4.5 Bump3
-// P4.3 Bump2
-// P4.2 Bump1
-// P4.0 Bump0, right side of robot
-
-#include <stdint.h>
-#include "msp.h"
-#include "../inc/Clock.h"
-#include "../inc/CortexM.h"
-#include "../inc/LaunchPad.h"
-#include "../inc/Motor.h"
-#include "../inc/BumpInt.h"
-#include "../inc/TExaS.h"
-#include "../inc/TimerA1.h"
-#include "../inc/FlashProgram.h"
-
-uint8_t CollisionData, CollisionFlag;  // mailbox
-
-void HandleCollision(uint8_t bumpSensor){
-   Motor_Stop();
-   CollisionData = bumpSensor;
-   CollisionFlag = 1;
-}
-
-int main(void){  // test of interrupt-driven bump interface
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-  CollisionFlag = 0;
-  Motor_Init();        // activate Lab 13 software
-  LaunchPad_Init();
-  //Motor_Forward(7500,7500); // 50%
-  BumpInt_Init(&HandleCollision);
-
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
-}
-
-
-int mainX(void){
-  DisableInterrupts();
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-
-// write this as part of Lab 14, section 14.4.4 Integrated Robotic System
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
-}
-
+/**
+ * Activate Timer A0 to periodically trigger ADC conversions
+ * on P4.7 = A6. Run the user task when each conversion is
+ * complete.
+ * @param task is a pointer to a user function called when ADC result ready
+ * @param period in units (1/(bus clock)/div), 16 bits
+ * @return none
+ * @brief Initialize timer-triggered ADC sampling
+ */
+void ADC0_InitTA0TriggerCh6(void(*task)(uint16_t result), uint16_t period);

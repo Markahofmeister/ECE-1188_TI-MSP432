@@ -1,7 +1,9 @@
-// Lab14_EdgeInterruptsmain.c
-// Runs on MSP432, interrupt version
-// Main test program for interrupt driven bump switches the robot.
-// Daniel Valvano and Jonathan Valvano
+// IRDistance.c
+// Runs on MSP432
+// Provide mid-level functions that convert raw ADC
+// values from the GP2Y0A21YK0F infrared distance sensors to
+// distances in mm.
+// Jonathan Valvano
 // July 11, 2019
 
 /* This example accompanies the book
@@ -38,56 +40,29 @@ those of the authors and should not be interpreted as representing official
 policies, either expressed or implied, of the FreeBSD Project.
 */
 
-// Negative logic bump sensors
-// P4.7 Bump5, left side of robot
-// P4.6 Bump4
-// P4.5 Bump3
-// P4.3 Bump2
-// P4.2 Bump1
-// P4.0 Bump0, right side of robot
+// 5V  connected to all three Pololu #136 GP2Y0A21YK0F Vcc's (+5V)
+// ground connected to all three Pololu #136 GP2Y0A21YK0F grounds
+// MSP432 P9.0 (J5) (analog input A17 to MSP432) connected to right GP2Y0A21YK0F Vout
+// MSP432 P6.1 (J3.23) (analog input A14 to MSP432) connected to center GP2Y0A21YK0F Vout
+// MSP432 P9.1 (J5) (analog input A16 to MSP432) connected to left GP2Y0A21YK0F Vout
+
 
 #include <stdint.h>
+#include "../inc/ADC14.h"
 #include "msp.h"
-#include "../inc/Clock.h"
-#include "../inc/CortexM.h"
-#include "../inc/LaunchPad.h"
-#include "../inc/Motor.h"
-#include "../inc/BumpInt.h"
-#include "../inc/TExaS.h"
-#include "../inc/TimerA1.h"
-#include "../inc/FlashProgram.h"
 
-uint8_t CollisionData, CollisionFlag;  // mailbox
 
-void HandleCollision(uint8_t bumpSensor){
-   Motor_Stop();
-   CollisionData = bumpSensor;
-   CollisionFlag = 1;
+int32_t LeftConvert(int32_t nl){        // returns left distance in mm
+  // write this for Lab 15
+  return 0; // replace this line
 }
 
-int main(void){  // test of interrupt-driven bump interface
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-  CollisionFlag = 0;
-  Motor_Init();        // activate Lab 13 software
-  LaunchPad_Init();
-  //Motor_Forward(7500,7500); // 50%
-  BumpInt_Init(&HandleCollision);
-
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
+int32_t CenterConvert(int32_t nc){   // returns center distance in mm
+  // write this for Lab 15
+  return 0; // replace this line
 }
 
-
-int mainX(void){
-  DisableInterrupts();
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-
-// write this as part of Lab 14, section 14.4.4 Integrated Robotic System
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
+int32_t RightConvert(int32_t nr){      // returns right distance in mm
+  // write this for Lab 15
+  return 0; // replace this line
 }
-

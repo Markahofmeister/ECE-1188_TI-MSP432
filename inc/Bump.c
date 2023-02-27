@@ -1,6 +1,6 @@
-// Lab14_EdgeInterruptsmain.c
-// Runs on MSP432, interrupt version
-// Main test program for interrupt driven bump switches the robot.
+// Bump.c
+// Runs on MSP432
+// Provide low-level functions that interface bump switches the robot.
 // Daniel Valvano and Jonathan Valvano
 // July 11, 2019
 
@@ -48,46 +48,25 @@ policies, either expressed or implied, of the FreeBSD Project.
 
 #include <stdint.h>
 #include "msp.h"
-#include "../inc/Clock.h"
-#include "../inc/CortexM.h"
-#include "../inc/LaunchPad.h"
-#include "../inc/Motor.h"
-#include "../inc/BumpInt.h"
-#include "../inc/TExaS.h"
-#include "../inc/TimerA1.h"
-#include "../inc/FlashProgram.h"
-
-uint8_t CollisionData, CollisionFlag;  // mailbox
-
-void HandleCollision(uint8_t bumpSensor){
-   Motor_Stop();
-   CollisionData = bumpSensor;
-   CollisionFlag = 1;
+// Initialize Bump sensors
+// Make six Port 4 pins inputs
+// Activate interface pullup
+// pins 7,6,5,3,2,0
+void Bump_Init(void){
+    // write this as part of Lab 10
+  
 }
+// Read current state of 6 switches
+// Returns a 6-bit positive logic result (0 to 63)
+// bit 5 Bump5
+// bit 4 Bump4
+// bit 3 Bump3
+// bit 2 Bump2
+// bit 1 Bump1
+// bit 0 Bump0
+uint8_t Bump_Read(void){
+    // write this as part of Lab 10
 
-int main(void){  // test of interrupt-driven bump interface
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-  CollisionFlag = 0;
-  Motor_Init();        // activate Lab 13 software
-  LaunchPad_Init();
-  //Motor_Forward(7500,7500); // 50%
-  BumpInt_Init(&HandleCollision);
-
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
-}
-
-
-int mainX(void){
-  DisableInterrupts();
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-
-// write this as part of Lab 14, section 14.4.4 Integrated Robotic System
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
+    return 0; // replace this line
 }
 

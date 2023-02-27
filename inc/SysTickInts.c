@@ -1,8 +1,8 @@
-// Lab14_EdgeInterruptsmain.c
-// Runs on MSP432, interrupt version
-// Main test program for interrupt driven bump switches the robot.
-// Daniel Valvano and Jonathan Valvano
-// July 11, 2019
+// SysTickInts.c
+// Runs on MSP432
+// Use the SysTick timer to request interrupts at a particular period.
+// Daniel Valvano, Jonathan Valvano
+// July 1, 2017
 
 /* This example accompanies the book
    "Embedded Systems: Introduction to Robotics,
@@ -38,56 +38,24 @@ those of the authors and should not be interpreted as representing official
 policies, either expressed or implied, of the FreeBSD Project.
 */
 
-// Negative logic bump sensors
-// P4.7 Bump5, left side of robot
-// P4.6 Bump4
-// P4.5 Bump3
-// P4.3 Bump2
-// P4.2 Bump1
-// P4.0 Bump0, right side of robot
 
 #include <stdint.h>
 #include "msp.h"
-#include "../inc/Clock.h"
-#include "../inc/CortexM.h"
-#include "../inc/LaunchPad.h"
-#include "../inc/Motor.h"
-#include "../inc/BumpInt.h"
-#include "../inc/TExaS.h"
-#include "../inc/TimerA1.h"
-#include "../inc/FlashProgram.h"
-
-uint8_t CollisionData, CollisionFlag;  // mailbox
-
-void HandleCollision(uint8_t bumpSensor){
-   Motor_Stop();
-   CollisionData = bumpSensor;
-   CollisionFlag = 1;
-}
-
-int main(void){  // test of interrupt-driven bump interface
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-  CollisionFlag = 0;
-  Motor_Init();        // activate Lab 13 software
-  LaunchPad_Init();
-  //Motor_Forward(7500,7500); // 50%
-  BumpInt_Init(&HandleCollision);
-
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
-}
 
 
-int mainX(void){
-  DisableInterrupts();
-  Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
-
-// write this as part of Lab 14, section 14.4.4 Integrated Robotic System
-  EnableInterrupts();
-  while(1){
-    WaitForInterrupt();
-  }
+// **************SysTick_Init*********************
+// Initialize SysTick periodic interrupts
+// Input: interrupt period
+//           Units of period are in bus clock period
+//           Maximum is 2^24-1
+//           Minimum is determined by execution time of the ISR
+// Input: priority 0 (high) to 7 (low)
+// Output: none
+void SysTick_Init(uint32_t period, uint32_t priority){
+  SysTick->CTRL = 0;              // 1) disable SysTick during setup
+  SysTick->LOAD = period - 1;     // 2) reload value sets period
+  SysTick->VAL = 0;               // 3) any write to current clears it
+  SCB->SHP[11] = priority<<5;     // set priority into top 3 bits of 8-bit register
+  SysTick->CTRL = 0x00000007;     // 4) enable SysTick with core clock and interrupts
 }
 
