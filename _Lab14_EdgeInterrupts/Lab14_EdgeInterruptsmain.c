@@ -65,6 +65,21 @@ void HandleCollision(uint8_t bumpSensor){
    CollisionFlag = 1;
 }
 
+// triggered on touch, falling edge
+void PORT4_IRQHandler(void){
+
+    uint8_t bsMask = 0xED;
+    Clock_Delay1us(10);         // software debounce
+    P4->IFG &= ~bsMask;         // acknowledge and clear flag
+    P2->OUT ^= 0x02;             // toggle red LED on RGB LED
+    Motor_Stop();
+    Clock_Delay1ms(1000);
+    Motor_Backward(2500,2500);
+    Clock_Delay1ms(1000);
+
+}
+
+
 int main(void){  // test of interrupt-driven bump interface
   Clock_Init48MHz();   // 48 MHz clock; 12 MHz Timer A clock
   CollisionFlag = 0;
@@ -75,7 +90,8 @@ int main(void){  // test of interrupt-driven bump interface
 
   EnableInterrupts();
   while(1){
-    WaitForInterrupt();
+    //WaitForInterrupt();
+      Motor_Forward(2500,2500);
   }
 }
 

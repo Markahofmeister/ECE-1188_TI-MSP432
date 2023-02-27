@@ -89,8 +89,8 @@ void Motor_Forward(uint16_t leftDuty, uint16_t rightDuty){
 
     P5->OUT &= ~0x30;             //default output to 0 (forwards)
     P3->OUT |= 0xC0;                     //enable full power mode
-    PWM_Duty3(7499);
-    PWM_Duty4(7499);
+    PWM_Duty3(rightDuty);
+    PWM_Duty4(leftDuty);
 
 }
 
@@ -106,7 +106,7 @@ void Motor_Right(uint16_t leftDuty, uint16_t rightDuty){
 
     P5->OUT &= ~0x30;             //default output to 0 (forwards)
     P3->OUT |= 0xC0;                     //enable full power mode
-    PWM_Duty3(7499);
+    PWM_Duty3(rightDuty);
     PWM_Duty4(0);
 
 }
@@ -124,7 +124,7 @@ void Motor_Left(uint16_t leftDuty, uint16_t rightDuty){
     P5->OUT &= ~0x30;             //default output to 0 (forwards)
     P3->OUT |= 0xC0;                     //enable full power mode
     PWM_Duty3(0);
-    PWM_Duty4(7499);
+    PWM_Duty4(leftDuty);
 
 }
 
@@ -140,7 +140,7 @@ void Motor_Backward(uint16_t leftDuty, uint16_t rightDuty){
 
     P5->OUT |= 0x30;             //default output to 1 (backwards)
     P3->OUT |= 0xC0;                     //enable full power mode
-    PWM_Duty3(7499);
-    PWM_Duty4(7499);
+    PWM_Duty3(rightDuty);
+    PWM_Duty4(leftDuty);
 
 }

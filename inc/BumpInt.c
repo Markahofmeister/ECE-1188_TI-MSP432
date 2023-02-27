@@ -91,14 +91,4 @@ uint8_t Bump_Read(void){
 
 }
 
-// triggered on touch, falling edge
-void PORT4_IRQHandler(void){
-
-    uint8_t bsMask = 0xED;
-    Clock_Delay1us(10);         // software debounce
-    P4->IFG &= ~bsMask;         // acknowledge and clear flag
-    P2->OUT ^= 0x02;             // toggle red LED on RGB LED
-
-
-}
 
