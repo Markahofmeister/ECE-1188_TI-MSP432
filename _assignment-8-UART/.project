@@ -24,4 +24,16 @@
 		<nature>org.eclipse.cdt.core.ccnature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>UART0.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/assignments/assignment-8-UART/UART0.c</locationURI>
+		</link>
+		<link>
+			<name>UART0_TX_main.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/assignments/assignment-8-UART/UART0_TX_main.c</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
