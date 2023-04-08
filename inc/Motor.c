@@ -15,8 +15,8 @@
 
 #include <stdint.h>
 #include "msp.h"
-#include "../inc/CortexM.h"
-#include "../inc/PWM.h"
+#include "CortexM.h"
+#include "PWM.h"
 
 
 
@@ -61,6 +61,7 @@ void Motor_Init(void){
     uint16_t initDutyLeft = 0;
 
     PWM_Init34(initPeriod, initDutyRight, initDutyLeft);   //initialize PWM with 10ms period and 0% duty cycle
+
 
 }
 

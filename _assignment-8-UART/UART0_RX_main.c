@@ -8,7 +8,6 @@
 #include "msp.h"
 #include <stdio.h>
 #include <string.h>
-//#include "../inc/Clock.h"
 #include "Clock.h"
 #include "../inc/UART0.h"
 
@@ -35,7 +34,7 @@ void Port2_Init(void){
   P2->OUT &= ~0x07;     //    all LEDs off
 }
 
-// Output RGB Value to LED
+// Function to output RGB Value to LED
 void Port2_Output(uint8_t data){  // write three outputs bits of P2
   P2->OUT = (P2->OUT&0xF8)|data;
 }
@@ -52,34 +51,36 @@ void main(void)
   char command[10];                      // Empty buffer in which UART characters can be sent
   char *commandPtr = command;             // Pointer to buffer (to pass to function)
 
-  //const char colors[8][10] = {"dark", "red", "blue", "green",         //array of Strings for each command
-                        //"yellow", "sky blue", "white", "pink"};
-
   while(1)
   {
-      //UART0_InString(commandPtr, maxSize);
-      char test = UART0_InChar();
+      UART0_InString(commandPtr, maxSize);      // Store incoming String from UART in pointer to array of characters
 
-      if(test == 'd') {
+      if(!strcmp(commandPtr, "dark")) {         // Illuminate RGB LED color based upon the contents of the UART-sent string
           Port2_Output(0x00);
       }
-      else if(test == 'r') {
-          Port2_Output(0x01);
+      else if(!strcmp(commandPtr, "red")) {
+          Port2_Output(RED);
       }
-      /*switch(*commandPtr) {
+      else if(!strcmp(commandPtr, "blue")) {
+          Port2_Output(BLUE);
+      }
+      else if(!strcmp(commandPtr, "green")) {
+          Port2_Output(GREEN);
+      }
+      else if(!strcmp(commandPtr, "yellow")) {
+          Port2_Output(RED + GREEN);
+      }
+      else if(!strcmp(commandPtr, "sky blue")) {
+          Port2_Output(GREEN + BLUE);
+      }
+      else if(!strcmp(commandPtr, "white")) {
+          Port2_Output(RED + GREEN + BLUE);
+      }
+      else if(!strcmp(commandPtr, "pink")) {
+          Port2_Output(RED + BLUE);
+      }
 
-          case "dark":
-              Port2_Output(0x00);
-          break;
-          case colors[1]:
-              Port2_Output(RED);
-          break;
-          default:
-          break;
-
-      }*/
-
-      Clock_Delay1ms(500);
+      Clock_Delay1ms(500);                  // Delay 500 ms
   }
 
 }

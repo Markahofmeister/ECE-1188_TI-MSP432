@@ -1,11 +1,7 @@
 /**
- * @file      BumpInt.h
- * @brief     Provide low-level functions that interface bump switches on the robot.
- * @details   Six switches are connected to P4.7-P4.5, P4.3, P4.2, and P4.0<br>
- 1) Hardware uses negative logic with internal pullup<br>
- 2) Positioned on the front of the robot to detect collisions<br>
- 3) Software returns 6-bit positive logic (1 means collision)<br>
- 4) Interrupt driven event handler
+ * @file      Clock.h
+ * @brief     Provide functions that initialize the MSP432 clock module
+ * @details   Reconfigure MSP432 to run at 48 MHz
  * @version   TI-RSLK MAX v1.1
  * @author    Daniel Valvano and Jonathan Valvano
  * @copyright Copyright 2019 by Jonathan W. Valvano, valvano@mail.utexas.edu,
@@ -13,16 +9,6 @@
  * @note      For more information see  http://users.ece.utexas.edu/~valvano/
  * @date      June 28, 2019
 
-<table>
-<caption id="Bump_ports4a">Six Bump sensors</caption>
-<tr><th>Pin  <th>Sensor
-<tr><td>P4.7 <td>Bump5, left side of robot
-<tr><td>P4.6 <td>Bump4
-<tr><td>P4.5 <td>Bump3
-<tr><td>P4.3 <td>Bump2
-<tr><td>P4.2 <td>Bump1
-<tr><td>P4.0 <td>Bump0, right side of robot
-</table>
  ******************************************************************************/
 
 /* This example accompanies the book
@@ -58,36 +44,60 @@ The views and conclusions contained in the software and documentation are
 those of the authors and should not be interpreted as representing official
 policies, either expressed or implied, of the FreeBSD Project.
 */
+#include <stdint.h>
 /*!
- * @defgroup RSLK_Input_Output
+ * @defgroup MSP432
  * @brief
  * @{*/
-
 /**
- * Initialize Bump sensors<br>
- * Make P4.7-P4.0 as interrupt-driven inputs<br>
- * Activate interface pull-up<br>
- * Interrupt on falling edge
- * @param task user function to run on collision
- * @return none
- * @brief  Initialize Bump sensors
- */
-void BumpInt_Init(void);
-
-/**
- * Read current state of 6 switches<br>
- * Read P4.7-P4.0 as inputs<br>
- * Returns a 6-bit positive logic result (0 to 63)<br>
- * bit 5 Bump5<br>
- * bit 4 Bump4<br>
- * bit 3 Bump3<br>
- * bit 2 Bump2<br>
- * bit 1 Bump1<br>
- * bit 0 Bump0
+ * Configure the MSP432 clock to run at 48 MHz
  * @param none
- * @return result is 6-bit positive logic
- * @note  result is a packed, right-justified, positive logic
- * @brief  Read current state of 6 switches
+ * @return none
+ * @note  Since the crystal is used, the bus clock will be very accurate
+ * @see Clock_GetFreq()
+ * @brief  Initialize clock to 48 MHz
  */
-uint8_t BumpInt_Read(void);
+void Clock_Init48MHz(void);
+ 
+
+/**
+ * Return the current bus clock frequency
+ * @param none
+ * @return frequency of the system clock in Hz
+ * @note  In this module, the return result will be 3000000 or 48000000
+ * @see Clock_Init48MHz()
+ * @brief Returns current clock bus frequency in Hz
+ */
+uint32_t Clock_GetFreq(void);
+
+
+/**
+ * Simple delay function which delays about n milliseconds.
+ * It is implemented with a nested for-loop and is very approximate.
+ * @param  n is the number of msec to wait
+ * @return none
+ * @note This function assumes a 48 MHz clock.
+ * This implementation is not very accurate.
+ * To improve accuracy, you could tune this function
+ * by adjusting the constant within the implementation
+ * found in the <b>Clock.c</b> file.
+ * For a more accurate time delay, you could use the SysTick module.
+ * @brief  Software implementation of a busy-wait delay
+ */
+void Clock_Delay1ms(uint32_t n);
+
+/**
+ * Simple delay function which delays about n microseconds.
+ * It is implemented with a nested for-loop and is very approximate.
+ * @param  n is the number of usec to wait
+ * @return none
+ * @note This function assumes a 48 MHz clock.
+ * This implementation is not very accurate.
+ * To improve accuracy, you could tune this function
+ * by adjusting the constant within the implementation
+ * found in the <b>Clock.c</b> file.
+ * For a more accurate time delay, you could use the SysTick module.
+ * @brief  Software implementation of a busy-wait delay
+ */
+void Clock_Delay1us(uint32_t n);
 

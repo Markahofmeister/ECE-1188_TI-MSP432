@@ -86,7 +86,7 @@ int main(void){  // test of interrupt-driven bump interface
   Motor_Init();        // activate Lab 13 software
   LaunchPad_Init();
 
-  BumpInt_Init(&HandleCollision);
+  BumpInt_Init();
 
   EnableInterrupts();
   while(1){

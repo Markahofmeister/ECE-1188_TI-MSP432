@@ -48,15 +48,15 @@ policies, either expressed or implied, of the FreeBSD Project.
 
 #include <stdint.h>
 #include "msp.h"
-#include "../inc/Clock.h"
-#include "../inc/CortexM.h"
+#include "Clock.h"
+#include "CortexM.h"
 
 // Initialize Bump sensors
 // Make six Port 4 pins inputs
 // Activate interface pullup
 // pins 7,6,5,3,2,0
 // Interrupt on falling edge (on touch)
-void BumpInt_Init(void(*task)(uint8_t)){
+void BumpInt_Init(void){
 
     uint8_t bsMask = 0xED;
 
