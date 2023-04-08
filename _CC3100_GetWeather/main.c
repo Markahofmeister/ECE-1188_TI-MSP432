@@ -228,6 +228,8 @@ void Crash(uint32_t time){
 // 3) replace 1234567890abcdef1234567890abcdef with your
 int main(void){int32_t retVal;  
 int32_t ASize = 0; SlSockAddrIn_t  Addr;
+SlGetRxStatResponse_t rssiRxStat;                   //variables for RSSI reading
+int rssiDataAct;
   initClk();           // 48 MHz
   UART0_Initprintf();  // Send data to PC, 115200 bps
   LaunchPad_Init();    // initialize LaunchPad I/O
@@ -272,6 +274,22 @@ int32_t ASize = 0; SlSockAddrIn_t  Addr;
         printf(" Failed\n");
     }
     printf("Push LaunchPad switch to run again\n");
+
+
+     /*
+      * Code added by me to see RSSI strength
+      */
+
+     if (sl_WlanRxStatGet(&rssiRxStat, 0) == 0) {
+         if (rssiRxStat.AvarageDataCtrlRssi != 0) {
+             rssiDataAct = rssiRxStat.AvarageDataCtrlRssi;
+         }
+     }
+     else {
+         rssiDataAct = -99;
+     }
+    printf ("\nRSSI: %d\n\n", rssiDataAct);
+
     while(LaunchPad_Input()==0){}; // wait for touch
     LaunchPad_Output(0);
   }
