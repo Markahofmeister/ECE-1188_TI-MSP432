@@ -212,7 +212,7 @@ void Crash(uint32_t time){
 // 2) you can change metric to imperial if you want temperature in F
 #define WELCOME "\nFetching weather from openweathermap.org"
 #define WEBPAGE "api.openweathermap.org"
-#define REQUEST "GET /data/2.5/weather?q=Pittsburgh&APPID=ec5e467c0bab847f51d2afd75602f908&units=imperial HTTP/1.1\nHost:api.openweathermap.org\nAccept: */*\n\n"
+#define REQUEST "GET /data/2.5/weather?q=Austin&APPID=ec5e467c0bab847f51d2afd75602f908&units=imperial HTTP/1.1\nHost:api.openweathermap.org\nAccept: */*\n\n"
 // 1) go to http://openweathermap.org/appid#use 
 // 2) Register on the Sign up page
 // 3) get an API key (APPID) replace the 1234567890abcdef1234567890abcdef with your APPID
