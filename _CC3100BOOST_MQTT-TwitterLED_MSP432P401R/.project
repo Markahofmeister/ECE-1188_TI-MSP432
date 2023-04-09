@@ -26,6 +26,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>LaunchPad.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/inc/LaunchPad.c</locationURI>
+		</link>
+		<link>
 			<name>Motor.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/inc/Motor.c</locationURI>

@@ -62,6 +62,7 @@
 #include "Motor.h"
 #include "msp.h"
 #include "SysTick.h"
+#include "LaunchPad.h"
 
 /*
  * Values for below macros shall be modified per the access-point's (AP) properties
@@ -374,11 +375,17 @@ void SimpleLinkSockEventHandler(SlSockEvent_t *pSock)
  */
 
 
+void Port2_Output(uint8_t data){  // write three outputs bits of P2
+   P2->OUT = (P2->OUT&0xF8)|data;
+}
+
 /*
+ *
  * Application's entry point
  */
 int main(int argc, char** argv)
 {
+
     _i32 retVal = -1;
 
     retVal = initializeAppVariables();
@@ -530,7 +537,9 @@ int main(int argc, char** argv)
     }
     CLI_Write(" Subscribed to uniqueID topic \n\r");
 
-    Motor_Init();
+    Motor_Init();                   //Initialize motor so TA0 configs are correct
+    LaunchPad_Init();
+
     while(1){
         rc = MQTTYield(&hMQTTClient, 10);
         if (rc != 0) {
@@ -628,8 +637,8 @@ static void messageArrived(MessageData* data) {
     CLI_Write("\n\r");
     if(!strcmp(tok, "go")) {
         CLI_Write("Entered Conditional\n\r");
-        Motor_Forward(10000, 10000);
-
+        Motor_Forward(5000, 5000);                  //Enters this function, but motors do not go forwards.
+        Port2_Output(0x02);
 
         /*
          * Try to use SysTick, hardware timers not working
