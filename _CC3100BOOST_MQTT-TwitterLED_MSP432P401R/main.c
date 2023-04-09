@@ -59,22 +59,25 @@
 #include "simplelink.h"
 #include "sl_common.h"
 #include "MQTTClient.h"
+#include "Motor.h"
+#include "msp.h"
+#include "SysTick.h"
 
 /*
  * Values for below macros shall be modified per the access-point's (AP) properties
  * SimpleLink device will connect to following AP when the application is executed
  */
-#define SSID_NAME       ""       /* Access point name to connect to. */
+#define SSID_NAME       "Camelot Apt. 101"       /* Access point name to connect to. */
 #define SEC_TYPE        SL_SEC_TYPE_WPA_WPA2     /* Security type of the Access piont */
-#define PASSKEY         ""   /* Password in case of secure AP */
+#define PASSKEY         "SJCIscioly2020"   /* Password in case of secure AP */
 #define PASSKEY_LEN     pal_Strlen(PASSKEY)  /* Password length in case of secure AP */
 
 /*
  * MQTT server and topic properties that shall be modified per application
  */
-#define MQTT_BROKER_SERVER  ""
-#define SUBSCRIBE_TOPIC ""
-#define PUBLISH_TOPIC ""
+#define MQTT_BROKER_SERVER  "broker.hivemq.com"
+#define PUBLISH_TOPIC "HofNet"
+#define SUBSCRIBE_TOPIC "HofNet2"
 
 // MQTT message buffer size
 #define BUFF_SIZE 32
@@ -385,6 +388,12 @@ int main(int argc, char** argv)
     stopWDT();
     initClk();
 
+    /*
+     * Initialize motors
+     */
+
+    //Clock_Init48MHz();
+
     /* GPIO Setup for Pins 2.0-2.2 */
     MAP_PMAP_configurePorts((const uint8_t *) port_mapping, PMAP_P2MAP, 1,
         PMAP_DISABLE_RECONFIGURATION);
@@ -403,14 +412,14 @@ int main(int argc, char** argv)
     GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
 
     /* Configure TimerA0 for RGB LED*/
-    TA0CCR0 = PWM_PERIOD;                   // PWM Period
+    /*TA0CCR0 = PWM_PERIOD;                   // PWM Period
     TA0CCTL1 = OUTMOD_7;                    // CCR1 reset/set
     TA0CCR1 = PWM_PERIOD * (0/255);                 // CCR1 PWM duty cycle
     TA0CCTL2 = OUTMOD_7;                    // CCR2 reset/set
     TA0CCR2 = PWM_PERIOD * (0/255);                 // CCR2 PWM duty cycle
     TA0CCTL3 = OUTMOD_7;                    // CCR3 reset/set
     TA0CCR3 = PWM_PERIOD * (0/255);                 // CCR3 PWM duty cycle
-    TA0CTL = TASSEL__SMCLK | MC__UP | TACLR;  // SMCLK, up mode, clear TAR
+    TA0CTL = TASSEL__SMCLK | MC__UP | TACLR;  // SMCLK, up mode, clear TAR */
 
     /* Configuring TimerA1 for Up Mode */
     Timer_A_configureUpMode(TIMER_A1_BASE, &upConfig);
@@ -521,6 +530,7 @@ int main(int argc, char** argv)
     }
     CLI_Write(" Subscribed to uniqueID topic \n\r");
 
+    Motor_Init();
     while(1){
         rc = MQTTYield(&hMQTTClient, 10);
         if (rc != 0) {
@@ -600,6 +610,7 @@ static void messageArrived(MessageData* data) {
         min(BUFF_SIZE, data->message->payloadlen));
     buf[data->message->payloadlen] = 0;
 
+    /*                                              //For RGB LED control - commented out for motor control.
     tok = strtok(buf, " ");
     color = strtol(tok, NULL, 10);
     TA0CCR1 = PWM_PERIOD * (color/255.0);                 // CCR1 PWM duty cycle
@@ -609,6 +620,45 @@ static void messageArrived(MessageData* data) {
     tok = strtok(NULL, " ");
     color = strtol(tok, NULL, 10);
     TA0CCR3 = PWM_PERIOD * (color/255.0);                  // CCR3 PWM duty cycle
+    */
+
+    tok = strtok(buf, NULL);
+    CLI_Write("Received Command: ");
+    CLI_Write(tok);
+    CLI_Write("\n\r");
+    if(!strcmp(tok, "go")) {
+        CLI_Write("Entered Conditional\n\r");
+        Motor_Forward(10000, 10000);
+
+
+        /*
+         * Try to use SysTick, hardware timers not working
+         */
+           /*uint16_t duty = 5;
+           uint16_t time = 100;
+           uint8_t mask_direction = 0x30;          //Declare masks for direction, PWM, enable.
+           uint8_t mask_PWM = 0xC0;
+           uint8_t mask_en = 0xC0;
+
+           P5->OUT &= ~mask_direction;              //Set direction to forwards on both motors
+           P3->OUT |= mask_en;                     //enable full power mode
+
+           uint32_t H,L,i;                         //declare high and low integers, as well as for loop increment
+           H = duty;
+           L = 10 - H;
+
+           for(i = 0; i < time; i++) {          //Each for loop iteration should  take 10ms. Therefore, it should be of duration time.
+               P2->OUT |= mask_PWM;                        //turn on motors
+               SysTick_Wait10ms(H);
+               P2->OUT &= ~mask_PWM;                       //turn off motors
+               SysTick_Wait10ms(L);
+           }*/
+
+    }
+    else if (!strcmp(tok, "stop")) {
+        CLI_Write("Entered Conditional");
+        Motor_Stop();
+    }
 
     return;
 }
