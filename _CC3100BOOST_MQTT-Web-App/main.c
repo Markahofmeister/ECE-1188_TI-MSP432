@@ -549,42 +549,43 @@ int main(int argc, char** argv)
 
             char robotStatus[7] = "";               // Holds duty cycle of left and right motors and state of bump switches
 
-            uint8_t bumpSensor = getBumpSensors();
+            //uint8_t bumpSensor = getBumpSensors();
 
-            char dutyCycleLeftStr[5], dutyCycleRightStr[5], bumpSensorStr[8];
+            //char dutyCycleLeftStr[5], dutyCycleRightStr[5], bumpSensorStr[8];
+            char dutyCycleLeftStr[5], dutyCycleRightStr[5];
 
             sprintf(dutyCycleLeftStr, "%d", dutyCycleLeft);
             sprintf(dutyCycleRightStr, "%d", dutyCycleRight);
-            sprintf(bumpSensorStr, "%d", bumpSensor);
+            //sprintf(bumpSensorStr, "%d", bumpSensor);
 
             strcat(robotStatus, dutyCycleLeftStr);
             strcat(robotStatus, " ");
             strcat(robotStatus, dutyCycleRightStr);
-            strcat(robotStatus, " ");
-            strcat(robotStatus, bumpSensorStr);
+            //strcat(robotStatus, " ");
+            //strcat(robotStatus, bumpSensorStr);
 
-            CLI_Write("Robot Status: ");
+            CLI_Write("Robot Duty Cycle Status: ");
             CLI_Write(robotStatus);
             CLI_Write("\n\r");
 
             int rc = 0;
             MQTTMessage msg;
             msg.dup = 0;
-            msg.id = 0;
+            msg.id = 1;
             msg.payload = dutyCycleLeftStr;
             msg.payloadlen = 5;
             msg.qos = QOS0;
             msg.retained = 0;
             rc = MQTTPublish(&hMQTTClient, PUBLISH_TOPIC, &msg);
 
-            rc = 0;
+            /*rc = 0;
             msg.dup = 0;
-            msg.id = 0;
+            msg.id = 2;
             msg.payload = dutyCycleRightStr;
             msg.payloadlen = 5;
             msg.qos = QOS0;
             msg.retained = 0;
-            rc = MQTTPublish(&hMQTTClient, PUBLISH_TOPIC, &msg);
+            rc = MQTTPublish(&hMQTTClient, PUBLISH_TOPIC, &msg);*/
 
             /*rc = 0;
             msg.dup = 0;
@@ -599,9 +600,9 @@ int main(int argc, char** argv)
                 CLI_Write(" Failed to publish unique ID to MQTT broker \n\r");
                 LOOP_FOREVER();
             }
-            CLI_Write(" Published unique ID successfully \n\r");
+            CLI_Write(" Published robot status successfully \n\r");
 
-            publishStatus = 0;
+            publishStatus = 1;
         }
 
         Delay(10);
@@ -677,9 +678,9 @@ static void messageArrived(MessageData* data) {
     if(!strcmp(tok, "go")) {
 
         CLI_Write("Entered Conditional\n\r");
-        dutyCycleLeft = 2000;
-        dutyCycleRight = 2000;
-        Motor_ForwardSimple(2000, 2000);
+        dutyCycleLeft = 20;
+        dutyCycleRight = 20;
+        Motor_ForwardSimple(20, 10000);
         Port2_Output(0x02);
 
 

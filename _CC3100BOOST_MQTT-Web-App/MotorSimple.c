@@ -95,7 +95,7 @@ void Motor_ForwardSimple(uint16_t duty, uint32_t time){
 
     uint32_t H,L,i;                         //declare high and low integers, as well as for loop increment
     H = duty;
-    L = 10000 - H;
+    L = 100 - H;
 
     for(i = 0; i < time; i++) {          //Each for loop iteration should  take 10ms. Therefore, it should be of duration time.
         P2->OUT |= mask_PWM;                        //turn on motors
@@ -106,7 +106,7 @@ void Motor_ForwardSimple(uint16_t duty, uint32_t time){
 
    //Once bot has driven forwards, turn off both motors and enter sleep mode.
 
-    Motor_StopSimple();
+    //Motor_StopSimple();
 
 
 }
