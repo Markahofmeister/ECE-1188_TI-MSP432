@@ -39,9 +39,9 @@
  * Values for below macros shall be modified per the access-point's (AP) properties
  * SimpleLink device will connect to following AP when the application is executed
  */
-#define SSID_NAME       "Mark"       /* Access point name to connect to. */
+#define SSID_NAME       "Camelot Apt. 101"       /* Access point name to connect to. */
 #define SEC_TYPE        SL_SEC_TYPE_WPA_WPA2     /* Security type of the Access piont */
-#define PASSKEY         "Mark1234"   /* Password in case of secure AP */
+#define PASSKEY         "SJCIscioly2020"   /* Password in case of secure AP */
 #define PASSKEY_LEN     pal_Strlen(PASSKEY)  /* Password length in case of secure AP */
 
 /*
@@ -84,7 +84,7 @@ typedef enum{
 /* Button debounce state variables */
 volatile unsigned int S1buttonDebounce = 0;
 volatile unsigned int S2buttonDebounce = 0;
-volatile int publishID = 0;
+volatile int publishStatus = 0;
 
 unsigned char macAddressVal[SL_MAC_ADDR_LEN];
 unsigned char macAddressLen = SL_MAC_ADDR_LEN;
@@ -346,8 +346,35 @@ void SimpleLinkSockEventHandler(SlSockEvent_t *pSock)
  */
 
 
+uint32_t dutyCycleLeft = 0, dutyCycleRight = 0;
+
 void Port2_Output(uint8_t data){  // write three outputs bits of P2
    P2->OUT = (P2->OUT&0xF8)|data;
+}
+
+void enableBumpSensors(void) {          //no interrupts
+    uint8_t bsMask = 0xED;
+
+    P4->SEL0 &= ~bsMask;            // select GPIO
+    P4->SEL1 &= ~bsMask;
+    P4->DIR &= ~bsMask;             // Change direction to input
+    P4->REN |= bsMask;              // Enable PUPD resistor
+    P4->OUT |= bsMask;              // Set to pull-up
+}
+
+// Read current state of 6 switches
+// Returns a 6-bit positive logic result (0 to 63)
+// bit 5 Bump5
+// bit 4 Bump4
+// bit 3 Bump3
+// bit 2 Bump2
+// bit 1 Bump1
+// bit 0 Bump0
+
+uint8_t getBumpSensors(void) {
+
+    return (P4->IN&0xED);   // Read 6 most LSB of port 4
+
 }
 
 /*
@@ -506,8 +533,8 @@ int main(int argc, char** argv)
     }
     CLI_Write(" Subscribed to uniqueID topic \n\r");
 
-    //Motor_Init();                   //Initialize motor so TA0 configs are correct
-    //LaunchPad_Init();
+
+    enableBumpSensors();
 
     while(1){
         rc = MQTTYield(&hMQTTClient, 10);
@@ -516,16 +543,57 @@ int main(int argc, char** argv)
             LOOP_FOREVER();
         }
 
-        if (publishID) {
+        if (publishStatus) {
+
+            CLI_Write("Publishing robot data\n\r");
+
+            char robotStatus[7] = "";               // Holds duty cycle of left and right motors and state of bump switches
+
+            uint8_t bumpSensor = getBumpSensors();
+
+            char dutyCycleLeftStr[5], dutyCycleRightStr[5], bumpSensorStr[8];
+
+            sprintf(dutyCycleLeftStr, "%d", dutyCycleLeft);
+            sprintf(dutyCycleRightStr, "%d", dutyCycleRight);
+            sprintf(bumpSensorStr, "%d", bumpSensor);
+
+            strcat(robotStatus, dutyCycleLeftStr);
+            strcat(robotStatus, " ");
+            strcat(robotStatus, dutyCycleRightStr);
+            strcat(robotStatus, " ");
+            strcat(robotStatus, bumpSensorStr);
+
+            CLI_Write("Robot Status: ");
+            CLI_Write(robotStatus);
+            CLI_Write("\n\r");
+
             int rc = 0;
             MQTTMessage msg;
             msg.dup = 0;
             msg.id = 0;
-            msg.payload = uniqueID;
-            msg.payloadlen = 8;
+            msg.payload = dutyCycleLeftStr;
+            msg.payloadlen = 5;
             msg.qos = QOS0;
             msg.retained = 0;
             rc = MQTTPublish(&hMQTTClient, PUBLISH_TOPIC, &msg);
+
+            rc = 0;
+            msg.dup = 0;
+            msg.id = 0;
+            msg.payload = dutyCycleRightStr;
+            msg.payloadlen = 5;
+            msg.qos = QOS0;
+            msg.retained = 0;
+            rc = MQTTPublish(&hMQTTClient, PUBLISH_TOPIC, &msg);
+
+            /*rc = 0;
+            msg.dup = 0;
+            msg.id = 0;
+            msg.payload = bumpSensorStr;
+            msg.payloadlen = 8;
+            msg.qos = QOS0;
+            msg.retained = 0;
+            rc = MQTTPublish(&hMQTTClient, PUBLISH_TOPIC, &msg);*/
 
             if (rc != 0) {
                 CLI_Write(" Failed to publish unique ID to MQTT broker \n\r");
@@ -533,12 +601,14 @@ int main(int argc, char** argv)
             }
             CLI_Write(" Published unique ID successfully \n\r");
 
-            publishID = 0;
+            publishStatus = 0;
         }
 
         Delay(10);
     }
 }
+
+
 
 static void generateUniqueID() {
     CRC32_setSeed(TLV->RANDOM_NUM_1, CRC32_MODE);
@@ -605,18 +675,24 @@ static void messageArrived(MessageData* data) {
     CLI_Write(tok);
     CLI_Write("\n\r");
     if(!strcmp(tok, "go")) {
+
         CLI_Write("Entered Conditional\n\r");
-        Motor_ForwardSimple(1000, 1000);
-        //Motor_Forward(5000, 5000);                  //Enters this function, but motors do not go forwards.
+        dutyCycleLeft = 2000;
+        dutyCycleRight = 2000;
+        Motor_ForwardSimple(2000, 2000);
         Port2_Output(0x02);
 
 
 
     }
     else if (!strcmp(tok, "stop")) {
+
         CLI_Write("Entered Conditional");
+        dutyCycleLeft = 0;
+        dutyCycleRight = 0;
         Motor_StopSimple();
-        //Motor_Stop();
+        Port2_Output(0x00);
+
     }
 
     return;
@@ -639,8 +715,8 @@ void PORT1_IRQHandler(void)
 
             GPIO_setOutputHighOnPin(GPIO_PORT_P1, GPIO_PIN0);
 
-            // Publish the unique ID
-            publishID = 1;
+            // Publish the status of the motors
+            publishStatus = 1;
 
             MAP_Timer_A_startCounter(TIMER_A1_BASE, TIMER_A_UP_MODE);
         }
