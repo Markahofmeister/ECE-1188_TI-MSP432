@@ -29,8 +29,8 @@
 #include "simplelink.h"
 #include "sl_common.h"
 #include "MQTTClient.h"
-//#include "Motor.h"
-#include "MotorSimple.h"
+#include "Motor.h"
+//#include "MotorSimple.h"
 #include "msp.h"
 //#include "SysTick.h"
 #include "LaunchPad.h"
@@ -84,7 +84,7 @@ typedef enum{
 /* Button debounce state variables */
 volatile unsigned int S1buttonDebounce = 0;
 volatile unsigned int S2buttonDebounce = 0;
-volatile int publishStatus = 0;
+volatile int publishStatus = 1;
 
 unsigned char macAddressVal[SL_MAC_ADDR_LEN];
 unsigned char macAddressLen = SL_MAC_ADDR_LEN;
@@ -115,6 +115,7 @@ const uint8_t port_mapping[] =
 };
 
 /* TimerA UpMode Configuration Parameter */
+
 const Timer_A_UpModeConfig upConfig =
 {
         TIMER_A_CLOCKSOURCE_SMCLK,              // SMCLK Clock Source
@@ -383,9 +384,9 @@ uint8_t getBumpSensors(void) {
  */
 int main(int argc, char** argv)
 {
-    Motor_InitSimple();     //Must use simple motors code. Hardware timers mess with usual motor code.
-    //Motor_Init();
-    //Motor_Forward(5000, 5000);
+
+    Motor_Init();
+    enableBumpSensors();
 
     _i32 retVal = -1;
 
@@ -398,21 +399,21 @@ int main(int argc, char** argv)
 
 
     /* GPIO Setup for Pins 2.0-2.2 */
-    MAP_PMAP_configurePorts((const uint8_t *) port_mapping, PMAP_P2MAP, 1,
+    /*MAP_PMAP_configurePorts((const uint8_t *) port_mapping, PMAP_P2MAP, 1,
         PMAP_DISABLE_RECONFIGURATION);
 
     MAP_GPIO_setAsPeripheralModuleFunctionOutputPin(GPIO_PORT_P2,
         GPIO_PIN0 | GPIO_PIN1 | GPIO_PIN2, GPIO_PRIMARY_MODULE_FUNCTION);
 
-    /* Confinguring P1.1 & P1.4 as an input and enabling interrupts */
-    GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN1 | GPIO_PIN4);
+
+    /*GPIO_setAsInputPinWithPullUpResistor(GPIO_PORT_P1, GPIO_PIN1 | GPIO_PIN4);
     GPIO_clearInterruptFlag(GPIO_PORT_P1, GPIO_PIN1 | GPIO_PIN4);
     GPIO_enableInterrupt(GPIO_PORT_P1, GPIO_PIN1 | GPIO_PIN4);
     GPIO_interruptEdgeSelect(GPIO_PORT_P1, GPIO_PIN1 | GPIO_PIN4, GPIO_HIGH_TO_LOW_TRANSITION);
     GPIO_clearInterruptFlag(GPIO_PORT_P1, GPIO_PIN1 | GPIO_PIN4);
 
     GPIO_setOutputLowOnPin(GPIO_PORT_P1, GPIO_PIN0);
-    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);
+    GPIO_setAsOutputPin(GPIO_PORT_P1, GPIO_PIN0);*/
 
     /* Configure TimerA0 for RGB LED*/
     /*TA0CCR0 = PWM_PERIOD;                   // PWM Period
@@ -425,11 +426,11 @@ int main(int argc, char** argv)
     TA0CTL = TASSEL__SMCLK | MC__UP | TACLR;  // SMCLK, up mode, clear TAR */
 
     /* Configuring TimerA1 for Up Mode */
-    Timer_A_configureUpMode(TIMER_A1_BASE, &upConfig);
+    /*Timer_A_configureUpMode(TIMER_A1_BASE, &upConfig);
 
     Interrupt_enableInterrupt(INT_TA1_0);
     Interrupt_enableInterrupt(INT_PORT1);
-    Interrupt_enableMaster();
+    Interrupt_enableMaster();*/
 
     /* Configure command line interface */
     CLI_Configure();
@@ -678,10 +679,11 @@ static void messageArrived(MessageData* data) {
     if(!strcmp(tok, "go")) {
 
         CLI_Write("Entered Conditional\n\r");
-        dutyCycleLeft = 20;
-        dutyCycleRight = 20;
-        Motor_ForwardSimple(20, 10000);
-        Port2_Output(0x02);
+        dutyCycleLeft = 33;
+        dutyCycleRight = 33;
+        Motor_Forward(dutyCycleLeft, dutyCycleRight);
+        //Motor_ForwardSimple(20, 10000);
+        //Port2_Output(0x02);
 
 
 
@@ -691,8 +693,9 @@ static void messageArrived(MessageData* data) {
         CLI_Write("Entered Conditional");
         dutyCycleLeft = 0;
         dutyCycleRight = 0;
-        Motor_StopSimple();
-        Port2_Output(0x00);
+        Motor_Stop();
+        //Motor_StopSimple();
+        //Port2_Output(0x00);
 
     }
 

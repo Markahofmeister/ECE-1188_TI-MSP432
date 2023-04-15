@@ -48,6 +48,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 
 #include <stdint.h>
 #include "msp.h"
+//#include "SysTick.h"
 
 
 // Initialize SysTick with busy wait running at bus clock.
@@ -69,8 +70,8 @@ void SysTick_Wait(uint32_t delay){
   SysTick->LOAD = (delay - 1);// count down to zero
   SysTick->VAL = 0;          // any write to CVR clears it and COUNTFLAG in CSR
   while(( SysTick->CTRL&0x00010000) == 0){};
-  // method #2: repeatedly evaluate elapsed time
-/*  volatile uint32_t elapsedTime;
+  /*// method #2: repeatedly evaluate elapsed time
+  volatile uint32_t elapsedTime;
   uint32_t startTime = SYSTICK->VAL;
   do{
     elapsedTime = (startTime-SYSTICK->VAL)&0x00FFFFFF;

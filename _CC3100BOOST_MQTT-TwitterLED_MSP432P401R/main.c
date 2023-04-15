@@ -606,7 +606,7 @@ static void messageArrived(MessageData* data) {
     CLI_Write("\n\r");
     if(!strcmp(tok, "go")) {
         CLI_Write("Entered Conditional\n\r");
-        Motor_ForwardSimple(1000, 1000);
+        Motor_ForwardSimple(2000, 200);
         //Motor_Forward(5000, 5000);                  //Enters this function, but motors do not go forwards.
         Port2_Output(0x02);
 
